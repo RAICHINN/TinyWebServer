@@ -28,11 +28,11 @@ public:
     }
     bool wait()
     {
-        return sem_wait(&m_sem) == 0;
+        return sem_wait(&m_sem) == 0; //原子操作P
     }
     bool post()
     {
-        return sem_post(&m_sem) == 0;
+        return sem_post(&m_sem) == 0; //原子操作V
     }
 
 private:

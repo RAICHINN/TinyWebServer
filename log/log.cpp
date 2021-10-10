@@ -36,16 +36,19 @@ bool Log::init(const char *file_name, int close_log, int log_buf_size, int split
     m_log_buf_size = log_buf_size;
     m_buf = new char[m_log_buf_size];
     memset(m_buf, '\0', m_log_buf_size);
-    m_split_lines = split_lines;
+    m_split_lines = split_lines; //日志最大行数
 
+    //获取系统时间
     time_t t = time(NULL);
     struct tm *sys_tm = localtime(&t);
     struct tm my_tm = *sys_tm;
 
  
-    const char *p = strrchr(file_name, '/');
+    const char *p = strrchr(file_name, '/'); //寻找字符串最后一次出现字符‘/’的位置
     char log_full_name[256] = {0};
 
+    //相当于自定义日志名
+    //若输入的文件名没有/，则直接将时间+文件名作为日志名
     if (p == NULL)
     {
         snprintf(log_full_name, 255, "%d_%02d_%02d_%s", my_tm.tm_year + 1900, my_tm.tm_mon + 1, my_tm.tm_mday, file_name);
@@ -59,7 +62,7 @@ bool Log::init(const char *file_name, int close_log, int log_buf_size, int split
 
     m_today = my_tm.tm_mday;
     
-    m_fp = fopen(log_full_name, "a");
+    m_fp = fopen(log_full_name, "a"); //"a" 追加到一个文件末尾，如果文件不存在则创建
     if (m_fp == NULL)
     {
         return false;
@@ -68,6 +71,10 @@ bool Log::init(const char *file_name, int close_log, int log_buf_size, int split
     return true;
 }
 
+/* 写日志函数
+level: 日志类型
+format: 写入的信息
+ */
 void Log::write_log(int level, const char *format, ...)
 {
     struct timeval now = {0, 0};
